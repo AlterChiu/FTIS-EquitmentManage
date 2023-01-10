@@ -1,0 +1,111 @@
+﻿@*using Dou.Misc.Extension
+    @Html.MenuMap()
+    @Html.DataManagerTable()*@
+
+<script src="~/Scripts/gis/bootstraptable/extensions/export/bootstrap-table-export.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/tableExport.min.js"></script>
+<script src="~/Scripts/gis/other/xlsx.full.min.js"></script>
+<script src="~/Scripts/jquery-3.6.0.intellisense.js"></script>
+
+
+<br />
+@using (Html.BeginForm("ivt1", "My", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <button id="create-button3" class="btn btn-info">資產盤點作業</button>
+}
+
+<!--
+@using (Html.BeginForm("test1", "My", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <button id="create-button5" class="btn btn-secondary">相機測試(test1)</button>
+}
+-->
+
+
+
+<p></p>
+
+
+@using (Html.BeginForm("rpt2", "My", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+
+    @*<p>
+            Title: @Html.TextBox("searchString")
+            Title2: @Html.TextBox("searchString2")
+        </p>*@
+
+    <button id="create2-button" class="btn btn-primary">產生資產清單報表</button>
+    <br />
+}
+
+@*
+    <br />
+    <br />
+    <button id="create-button" class="btn btn-secondary">產生資產清單報表(測試json)</button>
+*@
+
+
+@using Dou.Misc.Extension
+@Html.DataManagerOptionsJavascript(null, "douoptions")
+<table class="data-manager-container"> </table>
+
+
+
+<script>
+
+    @*前端直接匯出xlsx*@
+    $(document).ready(function () {
+        douoptions.tableOptions.buttonsAlign = 'none';
+        douoptions.tableOptions.buttonsClass = 'default';
+        douoptions.tableOptions.showExport = true;
+        douoptions.tableOptions.iconsPrefix = "glyphicon";
+        douoptions.tableOptions.icons = { export: 'glyphicon-export' };
+        douoptions.tableOptions.exportTypes = ['xlsx'];
+        douoptions.tableOptions.exportOptions = { fileName: 'myfile' };
+        douoptions.tableOptions.formatExport = function () { return "匯出Excel" }
+
+        $('.data-manager-container').DouEditableTable(douoptions);
+    });
+
+
+    //用JSon丟資料到Controller
+        $("#create-button").on("click", function () {
+            //var tmptxt1 = $('input[data-fn="EQNO"]').next().val();
+            var tmptxt1 = $('input[data-fn="EQNO"]').first().val();
+            var tmptxt2 = $('input[data-fn="EQTYPE1"]').find(":selected").text();
+            var tmptxt3 = $('input[data-fn="EQTYPE1"] option:selected').text();
+            //var tmptxt3 = $('input[data-fn="BUDATE-Start-Between_"]').first().text();
+            //var tmptxt4 = $('input[data-fn="BUDATE-End-Between_"]').val();
+            alert(tmptxt1);
+            alert(tmptxt2);
+            alert(tmptxt3);
+            //console.log("tmptxt1=" + tmptxt1);
+
+            var dataJSON = {};
+            dataJSON["searchString"] = tmptxt1;
+            dataJSON["searchString2"] = "";
+
+
+            alert(dataJSON["searchString"]);
+
+
+            var root = '@Url.Content("~/")';
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: root + "My/rpt2",
+                data: JSON.stringify(dataJSON),
+                //data: JSON.stringify({ searchString: tmptxt1, searchString2: "qq" }),
+                //data: JSON.stringify({ searchString: "hh", searchString2: "qq" }),
+
+                //contentType: "application/json;charset=utf-8",
+                success: function (data) {
+                    console.log("done");
+                }
+            });
+
+        });
+
+
+</script>
